@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Comic;
 class comicController extends Controller
 {
     /**
@@ -13,7 +13,8 @@ class comicController extends Controller
      */
     public function index()
     {
-        echo 'ciao';
+        $comics = Comic::all();
+        return view('comics.index',compact('comics'));
     }
 
     /**
@@ -23,7 +24,7 @@ class comicController extends Controller
      */
     public function create()
     {
-        //
+        return view('comics.create');
     }
 
     /**
@@ -34,7 +35,19 @@ class comicController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $request->validate([
+            'title' => 'required|unique:comics|max:50',
+            'type' => 'required|max:20',
+            'price' => 'required',
+        ]);
+
+        $new_comic = new comic();
+        $new_comic->fill($data);
+        $new_comic->save();
+
+        return redirect()->route('comics.index');
     }
 
     /**
@@ -46,6 +59,8 @@ class comicController extends Controller
     public function show($id)
     {
         //
+        $comic = Comic::find($id);
+        return view('comics.show', compact('comic'));
     }
 
     /**
@@ -56,7 +71,8 @@ class comicController extends Controller
      */
     public function edit($id)
     {
-        //
+        $comic = Comic::findOrFail($id);
+        return view('comics.edit', compact('comic'));
     }
 
     /**
@@ -66,9 +82,11 @@ class comicController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Comic $comic)
     {
-        //
+        $data = $request->all();
+        $comic->update($data);
+        return redirect()->route('comics.index', $comic['id']); 
     }
 
     /**
@@ -77,8 +95,9 @@ class comicController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comic $comic)
     {
-        //
+        $comic->delete();
+        return redirect()->route('comics.index'); 
     }
 }
