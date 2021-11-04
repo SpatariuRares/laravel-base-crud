@@ -39,7 +39,7 @@
                                     class="btn btn-warning">
                                     Modify
                                 </a>
-                                <form method="post" action="{{ route('comics.destroy', $comic['id']) }}">
+                                <form method="post" onclick="return confirm('Qesta azione è irreversibile!!! Sei sicuro di voler cancellare?')" action="{{ route('comics.destroy', $comic['id']) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Delete</button>
